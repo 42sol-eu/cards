@@ -32,6 +32,10 @@ class CardsDB:
     def __init__(self, db_path):
         self._db = tinydb.TinyDB(db_path)
 
+    def all(self): # TODO: this needs tests!
+        """Get all data in JSON format"""
+        return self._db.all()
+
     def add(self, card: Card) -> int:
         """Add a card to the db."""
         card.id = self._db.insert(card.to_dict())

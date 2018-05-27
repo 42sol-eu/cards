@@ -8,3 +8,10 @@ from .cardsdb import (  # noqa: F401
     Card,
     CardsDB
 )
+
+from .pluginloader import (
+    PluginLoader,
+    PluginLoaderCLI,
+    PLUGIN_FOLDER,
+    pass_context
+)

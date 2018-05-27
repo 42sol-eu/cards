@@ -47,10 +47,24 @@ def delete(card_id):
 @click.option('-f', '--format', default=DEFAULT_TABLEFORMAT,
               type=str,
               help='table formatting option, eg. "grid", "simple", "html"')
-def list_cards(noowner, owner, done, format):
+@click.option('--info', is_flag=True)
+def list_cards(noowner, owner, done, format, info):
     """
     List cards in db.
     """
+    if info:
+        click.echo('- simple:     simple output format')
+        click.echo('- json:       pretty printed json output')
+        click.echo('- markdown:   markdown output (tablular name = pipe)')
+        click.echo('- grid:       ... output')
+        click.echo('- packed:     ... output')
+        click.echo('- latex:      latex tabular output')
+        click.echo('- html:       html output')
+        click.echo('- rst:        restructured text output')
+        click.echo('- mediawiki:  mediawiki output (Wikipedia)')
+        click.echo('- orgtbl:     strange table format ;-)')
+        return 
+
     the_cards = cards_db().list_cards(noowner, owner, done)
 
     #  json is a special case
@@ -109,6 +123,20 @@ def count(noowner, owner, done):
     """Return number of cards in db."""
     print(cards_db().count(noowner, owner, done))
 
+
+PLUGIN_CONTEXT_SETTINGS = dict(auto_envvar_prefix='COMPLEX')
+
+@cards_cli.command(cls=cards.PluginLoaderCLI, context_settings=PLUGIN_CONTEXT_SETTINGS)
+@click.option('--home', type=click.Path(exists=True, file_okay=False, resolve_path=True),
+              help='Changes the folder to operate on.')
+@click.option('-v', '--verbose', is_flag=True, help='Enables verbose mode.')
+@cards.pass_context
+def do(ctx, verbose, home):
+    """Run a command (plugin) command."""
+    ctx.db = cards_db()
+    ctx.verbose = verbose
+    if home is not None:
+        ctx.home = home
 
 def cards_db():
     # just put it in users home dir for now
